@@ -10,6 +10,8 @@ const hbs = require('express-handlebars').create({
 app.engine('hbs', hbs.engine)
 app.set('view engine', 'hbs')
 
+app.use(express.static('public'))
+
 app.get('/', (request, response) => {
 	response.render('index')
 })
