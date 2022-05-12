@@ -2,9 +2,24 @@
 	<div class="nav-wrapper">
 		<a href="#" class="brand-logo">Courses App</a>
 		<ul id="nav-mobile" class="right hide-on-med-and-down">
+
+			{{#if isHomePage}}
+			<li class="active"><a href="/">Home</a></li>
+			{{else}}
 			<li><a href="/">Home</a></li>
+			{{/if}}
+
+			{{#if isCoursesPage}}
+			<li class="active"><a href="/courses">Courses</a></li>
+			{{else}}
 			<li><a href="/courses">Courses</a></li>
-			<li><a href="/add">Add a course</a></li>
+			{{/if}}
+
+			{{#if isCreatePage}}
+			<li class="active"><a href="/create">Create a course</a></li>
+			{{else}}
+			<li><a href="/create">Create a course</a></li>
+			{{/if}}
 		</ul>
 	</div>
 </nav>
