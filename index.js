@@ -12,26 +12,8 @@ app.set('view engine', 'hbs')
 app.use(express.static('public'))
 
 // routes
-app.get('/', (request, response) => {
-	response.render('index', {
-		title: 'Home page',
-		isHomePage: true
-	})
-})
-
-app.get('/courses', (request, response) => {
-	response.render('courses', {
-		title: 'Courses page',
-		isCoursesPage: true
-	})
-})
-
-app.get('/create', (request, response) => {
-	response.render('create', {
-		title: 'Create a new course',
-		isCreatePage: true
-	})
-})
+app.use('/', require('./routes/home'))
+app.use('/courses', require('./routes/courses'))
 
 const PORT = process.env.PORT || 3000
 
