@@ -1,4 +1,5 @@
 const { Router } = require('express')
+const { route } = require('express/lib/application')
 const router = Router()
 const Course = require('../models/course')
 
@@ -24,6 +25,15 @@ router.post('/create', async (request, response) => {
 	await course.save()
 
 	response.redirect('/courses')
+})
+
+router.get('/:id', async (request, response) => {
+	const course = await Course.getById(request.params.id)
+
+	response.render('course', {
+		title: `Course ${course.title}`,
+		course
+	})
 })
 
 module.exports = router
