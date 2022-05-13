@@ -34,8 +34,7 @@ class Course {
 				} else {
 					resolve(JSON.parse(content))
 				}
-			}
-			)
+			})
 		})
 	}
 }
