@@ -27,6 +27,11 @@ class Course {
 	}
 
 	static getAll() {
+		if (!fs.existsSync(PATH)) {
+			fs.writeFile(PATH, '[]', (err) => {
+				if (err) throw err
+			})
+		}
 		return new Promise((resolve, reject) => {
 			fs.readFile(PATH, 'utf-8', (err, content) => {
 				if (err) {
