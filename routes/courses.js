@@ -15,4 +15,10 @@ router.get('/create', (request, response) => {
 	})
 })
 
+router.post('/create', (request, response) => {
+	console.log(request.body)
+
+	response.redirect('/courses')
+})
+
 module.exports = router

@@ -1,1 +1,23 @@
 <h1>Create a new course</h1>
+
+<form action="/courses/create" method="POST">
+	<div class="input-field">
+		<input name="title" id="title" type="text" class="validate" required>
+		<label for="title">The name of the course</label>
+		<span class="helper-text" data-error="Enter the name"></span>
+	</div>
+
+	<div class="input-field">
+		<input name="price" id="price" type="number" class="validate" min="1" required>
+		<label for="price">The price of the course</label>
+		<span class="helper-text" data-error="Enter the price"></span>
+	</div>
+
+	<div class="input-field">
+		<input name="image" id="img" type="text" class="validate" required>
+		<label for="img">URL of the image</label>
+		<span class="helper-text" data-error="Enter the url"></span>
+	</div>
+
+	<button class="btn btn-primary">Add course </button>
+</form>
