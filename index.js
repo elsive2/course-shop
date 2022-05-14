@@ -17,6 +17,7 @@ app.use(express.urlencoded({
 // routes
 app.use('/', require('./routes/home'))
 app.use('/courses', require('./routes/courses'))
+app.use('/cart', require('./routes/cart'))
 
 const PORT = process.env.PORT || 3000
 
