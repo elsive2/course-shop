@@ -15,7 +15,9 @@ router.get('/', async (request, response) => {
 
 	response.render('cart', {
 		title: 'Cart',
-		cart
+		isCartPage: true,
+		courses: cart.courses,
+		price: cart.price
 	})
 })
 
