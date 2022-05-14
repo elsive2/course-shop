@@ -8,7 +8,7 @@ router.post('/add', async (request, response) => {
 	const course = await Course.getById(request.body.id)
 	await Cart.add(course)
 
-	response.redirect('/cart')
+	response.redirect('/courses')
 })
 
 router.get('/', async (request, response) => {
@@ -24,8 +24,8 @@ router.get('/', async (request, response) => {
 
 router.delete('/remove/:id', async (request, response) => {
 	const cart = await Cart.remove(request.params.id)
-	console.log(cart)
-	response.status(200).json(cart)
+
+	response.json(cart)
 })
 
 module.exports = router
