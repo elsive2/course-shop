@@ -47,6 +47,31 @@ class Card {
 			})
 		})
 	}
+
+	static async remove(id) {
+		const cart = await this.fetch()
+		const index = cart.courses.findIndex(c => c.id === id)
+		const course = cart.courses[index]
+
+		if (course.count === 1) {
+			// delete
+			cart.courses = cart.courses.filter(c => c.id !== id)
+		} else {
+			// change the count
+			cart.courses[index].count--
+		}
+		cart.price -= course.price
+
+		return new Promise((resolve, reject) => {
+			fs.writeFile(PATH, JSON.stringify(cart), (err) => {
+				if (err) {
+					reject(err)
+				} else {
+					resolve(cart)
+				}
+			})
+		})
+	}
 }
 
 module.exports = Card

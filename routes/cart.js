@@ -1,4 +1,5 @@
 const { Router } = require('express')
+const { route } = require('express/lib/application')
 const router = Router()
 const Cart = require('../models/cart')
 const Course = require('../models/course')
@@ -19,6 +20,12 @@ router.get('/', async (request, response) => {
 		courses: cart.courses,
 		price: cart.price
 	})
+})
+
+router.delete('/remove/:id', async (request, response) => {
+	const cart = await Cart.remove(request.params.id)
+	console.log(cart)
+	response.status(200).json(cart)
 })
 
 module.exports = router

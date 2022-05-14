@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const app = express()
 
 const hbs = require('express-handlebars').create({
@@ -9,7 +10,7 @@ const hbs = require('express-handlebars').create({
 app.engine('hbs', hbs.engine)
 app.set('view engine', 'hbs')
 
-app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({
 	extended: true
 }))
