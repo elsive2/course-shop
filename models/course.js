@@ -1,70 +1,18 @@
-const uuid = require('uuid')
-const fs = require('fs')
-const path = require('path')
+const { Schema, model } = require('mongoose')
 
-const PATH = path.join(__dirname, '..', 'data', 'courses.json')
-
-class Course {
-	constructor(object) {
-		this.object = object
-
-		this.object.id = uuid.v4()
+const course = new Schema({
+	title: {
+		type: String,
+		required: true
+	},
+	price: {
+		type: Number,
+		required: true
+	},
+	image: {
+		type: String,
+		required: true
 	}
+})
 
-	async save() {
-		const courses = await Course.getAll()
-		courses.push(this.object)
-
-		return new Promise((resolve, reject) => {
-			fs.writeFile(PATH, JSON.stringify(courses), (err) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve()
-				}
-			})
-		})
-	}
-
-	static getAll() {
-		if (!fs.existsSync(PATH)) {
-			fs.writeFile(PATH, '[]', (err) => {
-				if (err) throw err
-			})
-		}
-		return new Promise((resolve, reject) => {
-			fs.readFile(PATH, 'utf-8', (err, content) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(JSON.parse(content))
-				}
-			})
-		})
-	}
-
-	static async getById(id) {
-		const courses = await Course.getAll()
-
-		return courses.find(c => c.id === id)
-	}
-
-	static async update(data) {
-		const courses = await this.getAll()
-		const index = courses.findIndex(c => c.id === data.id)
-
-		courses[index] = data
-
-		return new Promise((resolve, reject) => {
-			fs.writeFile(PATH, JSON.stringify(courses), (err) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve()
-				}
-			})
-		})
-	}
-}
-
-module.exports = Course
+module.exports = model('Course', course)

@@ -21,9 +21,12 @@ router.get('/create', (request, response) => {
 router.post('/create', async (request, response) => {
 	const course = new Course(request.body)
 
-	await course.save()
-
-	response.redirect('/courses')
+	try {
+		await course.save()
+		response.redirect('/courses')
+	} catch (e) {
+		console.log(e)
+	}
 })
 
 router.get('/:id', async (request, response) => {
