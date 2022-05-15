@@ -3,7 +3,8 @@ const router = Router()
 const Course = require('../models/course')
 
 router.get('/', async (reqeust, response) => {
-	const courses = await Course.getAll()
+	const courses = await Course.find().lean()
+
 	response.render('courses', {
 		title: 'Courses page',
 		isCoursesPage: true,
@@ -30,12 +31,16 @@ router.post('/create', async (request, response) => {
 })
 
 router.get('/:id', async (request, response) => {
-	const course = await Course.getById(request.params.id)
+	if (request.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+		const course = await Course.findById(request.params.id).lean()
 
-	response.render('course', {
-		title: 'Singe course',
-		course
-	})
+		return response.render('course', {
+			title: 'Single course',
+			course
+		})
+	}
+	return response.status(404)
+		.redirect('/courses')
 })
 
 router.get('/:id/edit', async (request, response) => {
@@ -43,7 +48,7 @@ router.get('/:id/edit', async (request, response) => {
 		return response.redirect('/courses')
 	}
 
-	const course = await Course.getById(request.params.id)
+	const course = await Course.findById(request.params.id).lean()
 
 	response.render('edit', {
 		title: `Edit ${course.title}`,
@@ -52,9 +57,11 @@ router.get('/:id/edit', async (request, response) => {
 })
 
 router.post('/edit', async (request, response) => {
-	await Course.update(request.body)
+	if (request.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+		await Course.findByIdAndUpdate(request.body.id, request.body)
 
-	response.redirect('/courses')
+		response.redirect('/courses')
+	}
 })
 
 module.exports = router
