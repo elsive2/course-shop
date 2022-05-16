@@ -40,4 +40,17 @@ User.methods.addToCart = async function (course) {
 	return this.save()
 }
 
+User.methods.removeFromCart = function (id) {
+	let items = [...this.cart.items]
+	const index = items.findIndex(c => c.courseId.toString() === id)
+
+	if (items[index].count <= 1) {
+		items = items.filter(c => c.courseId.toString() !== id)
+	} else {
+		items[index].count--
+	}
+	this.cart = { items }
+	this.save()
+}
+
 module.exports = model('User', User)

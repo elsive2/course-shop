@@ -24,7 +24,7 @@ app.use(express.urlencoded({
 // middlewares
 app.use(async (request, response, next) => {
 	try {
-		const user = await User.findById('6281f2df2e6a2fbea089a28e')
+		const user = await User.findOne()
 		request.user = user
 		next()
 	} catch (e) {
