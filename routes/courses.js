@@ -3,7 +3,9 @@ const router = Router()
 const Course = require('../models/course')
 
 router.get('/', async (reqeust, response) => {
-	const courses = await Course.find().lean()
+	const courses = await Course.find()
+		.lean()
+		.populate('userId', ['name', 'email'])
 
 	response.render('courses', {
 		title: 'Courses page',
@@ -20,6 +22,7 @@ router.get('/create', (request, response) => {
 })
 
 router.post('/create', async (request, response) => {
+	request.body.userId = request.user
 	const course = new Course(request.body)
 
 	try {
