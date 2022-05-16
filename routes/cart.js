@@ -9,13 +9,20 @@ router.post('/add', async (request, response) => {
 })
 
 router.get('/', async (request, response) => {
-	const cart = await Cart.fetch()
+	const user = await request.user.populate('cart.items.courseId')
+	const courses = user.cart.items.map((item) => {
+		return { ...item.courseId._doc, count: item.count }
+	})
+	const price = courses.reduce((total, course) => {
+		return total += course.price * course.count
+	}, 0)
+
 
 	response.render('cart', {
 		title: 'Cart',
 		isCartPage: true,
-		courses: cart.courses,
-		price: cart.price
+		price,
+		courses
 	})
 })
 
