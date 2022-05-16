@@ -47,7 +47,6 @@ router.get('/:id/edit', async (request, response) => {
 	if (!request.query.allow) {
 		return response.redirect('/courses')
 	}
-
 	const course = await Course.findById(request.params.id).lean()
 
 	response.render('edit', {
@@ -57,10 +56,20 @@ router.get('/:id/edit', async (request, response) => {
 })
 
 router.post('/edit', async (request, response) => {
-	if (request.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+	try {
 		await Course.findByIdAndUpdate(request.body.id, request.body)
-
 		response.redirect('/courses')
+	} catch (e) {
+		console.log(e)
+	}
+})
+
+router.post('/remove', async (request, response) => {
+	try {
+		await Course.deleteOne({ _id: request.body.id })
+		response.redirect('/courses')
+	} catch (e) {
+		console.log(e)
 	}
 })
 

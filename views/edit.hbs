@@ -1,6 +1,6 @@
 <h1>Edit {{course.title}}</h1>
 
-<form action="/courses/edit" method="POST">
+<form action="/courses/edit" method="POST" class="course-form">
 	<div class="input-field">
 		<input name="title" id="title" type="text" class="validate" value="{{course.title}}" required>
 		<label for="title">The name of the course</label>
@@ -21,5 +21,9 @@
 
 	<input type="hidden" name="id" value="{{course._id}}">
 
-	<button class="btn btn-primary">Edit course</button>
+	<button class="btn btn-primary" type="submit">Edit</button>
+</form>
+<form action="/courses/remove" method="POST">
+	<input type="hidden" name="id" value="{{course._id}}">
+	<button class="btn red">Delete</button>
 </form>
