@@ -5,8 +5,16 @@ const toCurrency = price => {
 	}).format(price)
 }
 
+const toDate = date => {
+	return new Intl.DateTimeFormat('en-US').format(new Date(date))
+}
+
 document.querySelectorAll('.price').forEach(node => {
 	node.textContent = toCurrency(node.textContent)
+})
+
+document.querySelectorAll('.date').forEach(node => {
+	node.textContent = toDate(node.textContent)
 })
 
 const $cart = document.querySelector('#cart')
