@@ -53,4 +53,9 @@ User.methods.removeFromCart = function (id) {
 	this.save()
 }
 
+User.methods.clearCart = function () {
+	this.cart = { items: [] }
+	return this.save()
+}
+
 module.exports = model('User', User)

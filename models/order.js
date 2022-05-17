@@ -15,6 +15,10 @@ const order = new Schema({
 	],
 	user: {
 		name: String,
+		email: {
+			type: String,
+			required: true
+		},
 		userId: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
