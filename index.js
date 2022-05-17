@@ -36,6 +36,7 @@ app.use(async (request, response, next) => {
 app.use('/', require('./routes/home'))
 app.use('/courses', require('./routes/courses'))
 app.use('/cart', require('./routes/cart'))
+app.use('/orders', require('./routes/orders'))
 
 async function start() {
 	try {
