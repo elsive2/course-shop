@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const router = Router()
 const User = require('../models/user')
+const auth = require('../middlewares/auth')
 
 router.get('/login', async (request, response) => {
 	response.render('auth/login', {
@@ -20,7 +21,7 @@ router.post('/login', async (request, response) => {
 	})
 })
 
-router.post('/logout', async (request, response) => {
+router.post('/logout', auth, async (request, response) => {
 	request.session.destroy(() => {
 		response.redirect('/')
 	})

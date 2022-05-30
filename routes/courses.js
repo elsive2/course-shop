@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const router = Router()
 const Course = require('../models/course')
+const auth = require('../middlewares/auth')
 
 router.get('/', async (reqeust, response) => {
 	const courses = await Course.find()
@@ -14,14 +15,14 @@ router.get('/', async (reqeust, response) => {
 	})
 })
 
-router.get('/create', (request, response) => {
+router.get('/create', auth, (request, response) => {
 	response.render('create', {
 		title: 'Create a new course',
 		isCreatePage: true,
 	})
 })
 
-router.post('/create', async (request, response) => {
+router.post('/create', auth, async (request, response) => {
 	request.body.userId = request.user
 	const course = new Course(request.body)
 
@@ -46,7 +47,7 @@ router.get('/:id', async (request, response) => {
 		.redirect('/courses')
 })
 
-router.get('/:id/edit', async (request, response) => {
+router.get('/:id/edit', auth, async (request, response) => {
 	if (!request.query.allow) {
 		return response.redirect('/courses')
 	}
@@ -58,7 +59,7 @@ router.get('/:id/edit', async (request, response) => {
 	})
 })
 
-router.post('/edit', async (request, response) => {
+router.post('/edit', auth, async (request, response) => {
 	try {
 		await Course.findByIdAndUpdate(request.body.id, request.body)
 		response.redirect('/courses')
@@ -67,7 +68,7 @@ router.post('/edit', async (request, response) => {
 	}
 })
 
-router.post('/remove', async (request, response) => {
+router.post('/remove', auth, async (request, response) => {
 	try {
 		await Course.deleteOne({ _id: request.body.id })
 		response.redirect('/courses')

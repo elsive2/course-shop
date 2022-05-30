@@ -38,22 +38,14 @@ app.use(session({
 }))
 
 // middlewares
-app.use(async (request, response, next) => {
-	try {
-		const user = await User.findOne()
-		request.user = user
-		next()
-	} catch (e) {
-		console.log(e)
-	}
-})
 app.use(require('./middlewares/variables'))
+app.use(require('./middlewares/user'))
 
 // routes
 app.use('/', require('./routes/home'))
 app.use('/courses', require('./routes/courses'))
-app.use('/cart', require('./routes/cart'))
-app.use('/orders', require('./routes/orders'))
+app.use('/cart', require('./middlewares/auth'), require('./routes/cart'))
+app.use('/orders', require('./middlewares/auth'), require('./routes/orders'))
 app.use('/auth', require('./routes/auth'))
 
 async function start() {
