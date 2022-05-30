@@ -1,16 +1,18 @@
 require('dotenv').config()
 
+const PORT = process.env.PORT || 3000
+const CONNECTION = process.env.MONGODB_URI
+
 const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
-const session = require('express-session')
 const User = require('./models/user')
 const Handlebars = require('handlebars')
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
+const session = require('express-session')
+const MongoStore = require('connect-mongodb-session')(session)
 
 const app = express()
-const PORT = process.env.PORT || 3000
-
 const hbs = require('express-handlebars').create({
 	defaultLayout: 'main',
 	extname: 'hbs',
@@ -24,10 +26,15 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({
 	extended: true
 }))
+
 app.use(session({
 	secret: 'secret-key',
 	resave: false,
-	saveUninitialized: false
+	saveUninitialized: false,
+	store: new MongoStore({
+		collection: 'sessions',
+		uri: CONNECTION
+	})
 }))
 
 // middlewares
@@ -51,7 +58,7 @@ app.use('/auth', require('./routes/auth'))
 
 async function start() {
 	try {
-		await mongoose.connect(process.env.MONGODB_URI)
+		await mongoose.connect(CONNECTION)
 
 		app.listen(PORT, () => {
 			console.log(`Server is running on port ${PORT}...`)
