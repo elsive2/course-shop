@@ -21,6 +21,30 @@ router.post('/login', async (request, response) => {
 	})
 })
 
+router.post('/register', async (request, response) => {
+	try {
+		const { email, password, name } = request.body
+		const candidate = await User.findOne({ email })
+
+		if (!candidate) {
+			const user = new User({
+				email,
+				name,
+				password,
+				cart: { items: [] }
+			})
+			await user.save()
+			response.redirect('/auth/login#login')
+		} else {
+			response.redirect('/auth/login#register')
+		}
+
+
+	} catch (e) {
+		console.log(e)
+	}
+})
+
 router.post('/logout', auth, async (request, response) => {
 	request.session.destroy(() => {
 		response.redirect('/')

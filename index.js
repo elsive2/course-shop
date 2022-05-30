@@ -6,7 +6,6 @@ const CONNECTION = process.env.MONGODB_URI
 const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
-const User = require('./models/user')
 const Handlebars = require('handlebars')
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
 const session = require('express-session')
