@@ -11,14 +11,24 @@ router.get('/login', async (request, response) => {
 })
 
 router.post('/login', async (request, response) => {
-	const user = await User.findOne()
-	request.session.user = user
-	request.session.isAuthenticated = true
-	request.session.save(err => {
-		if (err) throw err
+	try {
+		const { email, password } = request.body
+		const candidate = await User.findOne({ email })
 
-		response.redirect('/')
-	})
+		if (candidate && password === candidate.password) {
+			request.session.user = candidate
+			request.session.isAuthenticated = true
+			request.session.save(err => {
+				if (err) throw err
+
+				response.redirect('/')
+			})
+		} else {
+			response.redirect('/auth/login#login')
+		}
+	} catch (e) {
+		console.log(e)
+	}
 })
 
 router.post('/register', async (request, response) => {
