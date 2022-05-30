@@ -40,6 +40,7 @@ app.use('/', require('./routes/home'))
 app.use('/courses', require('./routes/courses'))
 app.use('/cart', require('./routes/cart'))
 app.use('/orders', require('./routes/orders'))
+app.use('/auth', require('./routes/auth'))
 
 async function start() {
 	try {
