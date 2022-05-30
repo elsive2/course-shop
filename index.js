@@ -25,7 +25,7 @@ app.use(express.urlencoded({
 	extended: true
 }))
 app.use(session({
-	secret: 'some secret key',
+	secret: 'secret-key',
 	resave: false,
 	saveUninitialized: false
 }))
@@ -52,17 +52,6 @@ app.use('/auth', require('./routes/auth'))
 async function start() {
 	try {
 		await mongoose.connect(process.env.MONGODB_URI)
-
-		// create the temporary user
-		const candidate = await User.findOne()
-		if (!candidate) {
-			const user = new User({
-				email: 'test@gmail.com',
-				name: 'John',
-				cart: { item: [] }
-			})
-			await user.save()
-		}
 
 		app.listen(PORT, () => {
 			console.log(`Server is running on port ${PORT}...`)
