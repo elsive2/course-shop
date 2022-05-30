@@ -39,3 +39,13 @@
 .auth {
 	padding-top: 1rem;
 }
+
+.btn-link {
+	border: none;
+	outline: none;
+	background: none;
+	cursor: pointer;
+	color: #fff;
+	font-family: inherit;
+	font-size: inherit;
+}

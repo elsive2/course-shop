@@ -15,6 +15,8 @@
 			<li><a href="/courses">Courses</a></li>
 			{{/if}}
 
+			{{#if isAuth}}
+
 			{{#if isCreatePage}}
 			<li class="active"><a href="/courses/create">Create a course</a></li>
 			{{else}}
@@ -33,10 +35,21 @@
 			<li><a href="/orders">Orders</a></li>
 			{{/if}}
 
+			<li>
+				<form action="auth/logout" method="POST">
+					<button type="submit" class="btn-link">Log out</button>
+				</form>
+			</li>
+
+
+			{{else}}
+
 			{{#if isLoginPage}}
 			<li class="active"><a href="/auth/login">Login</a></li>
 			{{else}}
 			<li><a href="/auth/login">Login</a></li>
+			{{/if}}
+
 			{{/if}}
 		</ul>
 	</div>

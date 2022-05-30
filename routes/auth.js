@@ -8,4 +8,15 @@ router.get('/login', async (request, response) => {
 	})
 })
 
+router.post('/login', async (request, response) => {
+	request.session.isAuthenticated = true
+	response.redirect('/')
+})
+
+router.post('/logout', async (request, response) => {
+	request.session.destroy(() => {
+		response.redirect('/')
+	})
+})
+
 module.exports = router

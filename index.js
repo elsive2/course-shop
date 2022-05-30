@@ -3,6 +3,7 @@ require('dotenv').config()
 const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
+const session = require('express-session')
 const User = require('./models/user')
 const Handlebars = require('handlebars')
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
@@ -23,6 +24,11 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({
 	extended: true
 }))
+app.use(session({
+	secret: 'some secret key',
+	resave: false,
+	saveUninitialized: false
+}))
 
 // middlewares
 app.use(async (request, response, next) => {
@@ -34,6 +40,7 @@ app.use(async (request, response, next) => {
 		console.log(e)
 	}
 })
+app.use(require('./middlewares/variables'))
 
 // routes
 app.use('/', require('./routes/home'))
