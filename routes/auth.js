@@ -2,6 +2,7 @@ const { Router } = require('express')
 const router = Router()
 const User = require('../models/user')
 const auth = require('../middlewares/auth')
+const bcrypt = require('bcryptjs')
 
 router.get('/login', async (request, response) => {
 	response.render('auth/login', {
@@ -14,8 +15,9 @@ router.post('/login', async (request, response) => {
 	try {
 		const { email, password } = request.body
 		const candidate = await User.findOne({ email })
+		const passwordsAreSame = await bcrypt.compare(password, candidate.password)
 
-		if (candidate && password === candidate.password) {
+		if (candidate && passwordsAreSame) {
 			request.session.user = candidate
 			request.session.isAuthenticated = true
 			request.session.save(err => {
@@ -35,12 +37,13 @@ router.post('/register', async (request, response) => {
 	try {
 		const { email, password, name } = request.body
 		const candidate = await User.findOne({ email })
+		const hashPassword = await bcrypt.hash(password, 10)
 
 		if (!candidate) {
 			const user = new User({
 				email,
 				name,
-				password,
+				password: hashPassword,
 				cart: { items: [] }
 			})
 			await user.save()
