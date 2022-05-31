@@ -20,10 +20,12 @@
 	</div>
 
 	<input type="hidden" name="id" value="{{course._id}}">
+	<input type="hidden" name="_csrf" value="{{csrf}}">
 
 	<button class="btn btn-primary" type="submit">Edit</button>
 </form>
 <form action="/courses/remove" method="POST">
+	<input type="hidden" name="_csrf" value="{{csrf}}">
 	<input type="hidden" name="id" value="{{course._id}}">
 	<button class="btn red">Delete</button>
 </form>

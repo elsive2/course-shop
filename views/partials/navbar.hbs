@@ -37,6 +37,7 @@
 
 			<li>
 				<form action="/auth/logout" method="POST">
+					<input type="hidden" name="_csrf" value="{{csrf}}">
 					<button type="submit" class="btn-link">Log out</button>
 				</form>
 			</li>

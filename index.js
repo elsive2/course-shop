@@ -37,6 +37,7 @@ app.use(session({
 }))
 
 // middlewares
+app.use(require('csurf')())
 app.use(require('./middlewares/variables'))
 app.use(require('./middlewares/user'))
 
