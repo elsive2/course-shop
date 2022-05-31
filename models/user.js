@@ -28,7 +28,9 @@ const User = new Schema({
 				}
 			}
 		]
-	}
+	},
+	resetToken: String,
+	resetTokenExp: Date
 })
 
 User.methods.addToCart = async function (course) {

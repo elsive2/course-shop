@@ -3,6 +3,8 @@ require('dotenv').config()
 const config = {
 	PORT: process.env.PORT || 3000,
 	CONNECTION: process.env.MONGODB_URI,
+	BASE_URL: process.env.BASE_URL,
+
 	SESSION_SECRET: process.env.SESSION_SECRET,
 
 	EMAIL_USER: process.env.EMAIL_USER,

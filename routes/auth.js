@@ -3,10 +3,12 @@ const router = Router()
 const User = require('../models/user')
 const auth = require('../middlewares/auth')
 const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 const emailOptions = require('../emails/registration')
+const resetOptions = require('../emails/reset')
 const emailService = require('../services/email')
 
-router.get('/login', async (request, response) => {
+router.get('/login', (request, response) => {
 	response.render('auth/login', {
 		title: 'Login',
 		isLoginPage: true,
@@ -80,6 +82,44 @@ router.post('/logout', auth, async (request, response) => {
 	request.session.destroy(() => {
 		response.redirect('/')
 	})
+})
+
+router.get('/reset', (request, response) => {
+	response.render('auth/reset', {
+		title: 'Reset password',
+		error: request.flash('error')
+	})
+})
+
+router.post('/reset', (request, response) => {
+	try {
+		crypto.randomBytes(32, async (err, buffer) => {
+			if (err) {
+				request.flash('error', 'Something went wrong! Try it later!')
+				return response.redirect('/auth/reset')
+			}
+
+			const token = buffer.toString('hex')
+			const user = await User.findOne({ email: request.body.email })
+
+			if (user) {
+				user.resetToken = token
+				user.resetTokenExp = Date.now() + 60 * 60 * 1000
+				await user.save()
+
+				emailService.getInstance().sendMail(resetOptions(user.email, token), (err, info) => {
+					if (err) throw err
+
+					response.redirect('/auth/login')
+				})
+			} else {
+				request.flash('error', 'There is no such a user with this email')
+				return response.redirect('/auth/reset')
+			}
+		})
+	} catch (e) {
+		console.log(e)
+	}
 })
 
 module.exports = router
