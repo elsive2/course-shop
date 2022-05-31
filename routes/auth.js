@@ -3,6 +3,8 @@ const router = Router()
 const User = require('../models/user')
 const auth = require('../middlewares/auth')
 const bcrypt = require('bcryptjs')
+const emailOptions = require('../emails/registration')
+const emailService = require('../services/email')
 
 router.get('/login', async (request, response) => {
 	response.render('auth/login', {
@@ -28,8 +30,12 @@ router.post('/login', async (request, response) => {
 				return request.session.save(err => {
 					if (err) throw err
 
-					request.flash('success', 'You signed in successfully!')
-					response.redirect('/')
+					emailService.getInstance().sendMail(emailOptions(email), (error, info) => {
+						if (err) throw err
+
+						request.flash('success', 'You signed in successfully!')
+						response.redirect('/')
+					})
 				})
 			}
 
@@ -56,6 +62,7 @@ router.post('/register', async (request, response) => {
 				cart: { items: [] }
 			})
 			await user.save()
+
 			request.flash('success', 'You registrated successfully!')
 			response.redirect('/auth/login#login')
 		} else {

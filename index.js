@@ -7,6 +7,7 @@ const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-ac
 const session = require('express-session')
 const MongoStore = require('connect-mongodb-session')(session)
 
+
 const app = express()
 const hbs = require('express-handlebars').create({
 	defaultLayout: 'main',
@@ -44,6 +45,7 @@ app.use('/courses', require('./routes/courses'))
 app.use('/cart', require('./middlewares/auth'), require('./routes/cart'))
 app.use('/orders', require('./middlewares/auth'), require('./routes/orders'))
 app.use('/auth', require('./routes/auth'))
+
 
 async function start() {
 	try {
