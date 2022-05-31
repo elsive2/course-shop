@@ -1,8 +1,4 @@
-require('dotenv').config()
-
-const PORT = process.env.PORT || 3000
-const CONNECTION = process.env.MONGODB_URI
-
+const cfg = require('./config/application')
 const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
@@ -27,12 +23,12 @@ app.use(express.urlencoded({
 }))
 
 app.use(session({
-	secret: 'secret-key',
+	secret: cfg.SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,
 	store: new MongoStore({
 		collection: 'sessions',
-		uri: CONNECTION
+		uri: cfg.CONNECTION
 	})
 }))
 
@@ -51,10 +47,10 @@ app.use('/auth', require('./routes/auth'))
 
 async function start() {
 	try {
-		await mongoose.connect(CONNECTION)
+		await mongoose.connect(cfg.CONNECTION)
 
-		app.listen(PORT, () => {
-			console.log(`Server is running on port ${PORT}...`)
+		app.listen(cfg.PORT, () => {
+			console.log(`Server is running on port ${cfg.PORT}...`)
 		})
 	} catch (e) {
 		console.log(e)
