@@ -1,10 +1,11 @@
 const { Router } = require('express')
 const router = Router()
 
-router.get('/', (reqeust, response) => {
+router.get('/', (request, response) => {
 	response.render('index', {
 		title: 'Home page',
-		isHomePage: true
+		isHomePage: true,
+		success: request.flash('success')
 	})
 })
 

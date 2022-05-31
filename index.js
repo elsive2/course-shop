@@ -40,6 +40,7 @@ app.use(session({
 app.use(require('csurf')())
 app.use(require('./middlewares/variables'))
 app.use(require('./middlewares/user'))
+app.use(require('connect-flash')())
 
 // routes
 app.use('/', require('./routes/home'))

@@ -49,3 +49,21 @@
 	font-family: inherit;
 	font-size: inherit;
 }
+
+.alert {
+	padding: .5rem 1rem;
+	text-align: center;
+	border-radius: 10px;
+	margin-bottom: 1rem;
+
+}
+
+.alert-danger {
+	background: rgba(255, 0, 0, 0.3);
+	color: red;
+}
+
+.alert-success {
+	background: rgba(0, 255, 0, 0.3);
+	color: green;
+}
