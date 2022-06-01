@@ -3,7 +3,11 @@ const router = Router()
 const Course = require('../models/course')
 const auth = require('../middlewares/auth')
 
-router.get('/', async (reqeust, response) => {
+function isOwner(course, user) {
+	return course.userId.toString() == user._id.toString()
+}
+
+router.get('/', async (request, response) => {
 	const courses = await Course.find()
 		.lean()
 		.populate('userId', ['name', 'email'])
@@ -11,6 +15,8 @@ router.get('/', async (reqeust, response) => {
 	response.render('courses', {
 		title: 'Courses page',
 		isCoursesPage: true,
+		userId: request.user ? request.user._id.toString() : null,
+		error: request.flash('error'),
 		courses
 	})
 })
@@ -53,6 +59,11 @@ router.get('/:id/edit', auth, async (request, response) => {
 	}
 	const course = await Course.findById(request.params.id).lean()
 
+	if (!isOwner(course, request.user)) {
+		request.flash('error', 'Nice try bro =)')
+		return response.redirect('/courses')
+	}
+
 	response.render('edit', {
 		title: `Edit ${course.title}`,
 		course
@@ -61,6 +72,11 @@ router.get('/:id/edit', auth, async (request, response) => {
 
 router.post('/edit', auth, async (request, response) => {
 	try {
+		if (!isOwner(course, request.user)) {
+			request.flash('error', 'Nice try bro =)')
+			return response.redirect('/courses')
+		}
+
 		await Course.findByIdAndUpdate(request.body.id, request.body)
 		response.redirect('/courses')
 	} catch (e) {
@@ -70,7 +86,10 @@ router.post('/edit', auth, async (request, response) => {
 
 router.post('/remove', auth, async (request, response) => {
 	try {
-		await Course.deleteOne({ _id: request.body.id })
+		await Course.deleteOne({
+			_id: request.body.id,
+			userId: request.user._id
+		})
 		response.redirect('/courses')
 	} catch (e) {
 		console.log(e)

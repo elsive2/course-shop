@@ -12,7 +12,8 @@ const app = express()
 const hbs = require('express-handlebars').create({
 	defaultLayout: 'main',
 	extname: 'hbs',
-	handlebars: allowInsecurePrototypeAccess(Handlebars)
+	handlebars: allowInsecurePrototypeAccess(Handlebars),
+	helpers: require('./utils/hbs-helpers')
 })
 
 app.engine('hbs', hbs.engine)

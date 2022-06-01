@@ -4,6 +4,9 @@
 {{#each courses}}
 <div class="row">
 	<div class="col s6 offset-s3">
+		{{#if @root.error}}
+		<p class="alert alert-danger">{{@root.error}}</p>
+		{{/if}}
 		<div class="card">
 			<div class="card-image">
 				<img src="{{image}}" alt="{{title}}">
@@ -16,7 +19,11 @@
 				<a href="/courses/{{ _id }}" target="_blank">Open course</a>
 
 				{{#if @root.isAuth}}
+
+				{{#equal @root.userId userId._id}}
 				<a href="/courses/{{ _id }}/edit?allow=true">Edit course</a>
+				{{/equal}}
+
 				<form action="/cart/add" method="POST">
 					<input type="hidden" name="id" value="{{ _id}}">
 					<input type="hidden" name="_csrf" value="{{@root.csrf}}">
