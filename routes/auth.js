@@ -110,12 +110,38 @@ router.post('/reset', (request, response) => {
 				emailService.getInstance().sendMail(resetOptions(user.email, token), (err, info) => {
 					if (err) throw err
 
+					request.flash('success', `Confirm password reset that was sent to the email - ${user.email}`)
 					response.redirect('/auth/login')
 				})
 			} else {
 				request.flash('error', 'There is no such a user with this email')
 				return response.redirect('/auth/reset')
 			}
+		})
+	} catch (e) {
+		console.log(e)
+	}
+})
+
+router.get('/reset_password', async (request, response) => {
+	const token = request.query.token
+
+	if (!token) {
+		return response.redirect('/auth/login')
+	}
+	try {
+		const user = await User.findOne({
+			resetToken: token,
+		})
+
+		if (!user || user.resetTokenExp < Date.now()) {
+			return response.redirect('/auth/login')
+		}
+		response.render('auth/password', {
+			title: 'Change your password',
+			error: request.flash('error'),
+			userId: user._id.toString(),
+			token
 		})
 	} catch (e) {
 		console.log(e)
