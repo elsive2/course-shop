@@ -17,7 +17,7 @@
 			<p class="alert alert-success">{{success}}</p>
 			{{/if}}
 
-			<form action="/auth/login" method="POST">
+			<form action="/auth/login" method="POST" novalidate>
 				<div class="input-field">
 					<input name="email" id="email" type="text" class="validate" required>
 					<label for="email">email</label>
@@ -41,7 +41,7 @@
 			<h1>Register</h1>
 
 			{{#if registerError}}
-			<p class="alert">{{registerError}}</p>
+			<p class="alert alert-danger">{{registerError}}</p>
 			{{/if}}
 
 			<form action="/auth/register" method="POST">

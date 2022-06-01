@@ -7,6 +7,8 @@ const crypto = require('crypto')
 const emailOptions = require('../emails/registration')
 const resetOptions = require('../emails/reset')
 const emailService = require('../services/email')
+const { validationResult } = require('express-validator')
+const { registerValidator } = require('../utils/validator')
 
 router.get('/login', (request, response) => {
 	response.render('auth/login', {
@@ -50,28 +52,27 @@ router.post('/login', async (request, response) => {
 	}
 })
 
-router.post('/register', async (request, response) => {
+router.post('/register', registerValidator, async (request, response) => {
 	try {
 		const { email, password, name } = request.body
-		const candidate = await User.findOne({ email })
 		const hashPassword = await bcrypt.hash(password, 10)
 
-		if (!candidate) {
-			const user = new User({
-				email,
-				name,
-				password: hashPassword,
-				cart: { items: [] }
-			})
-			await user.save()
-
-			request.flash('success', 'You registrated successfully!')
-			response.redirect('/auth/login#login')
-		} else {
-			request.flash('registerError', 'The email is already engaged!')
-			response.redirect('/auth/login#register')
+		const errors = validationResult(request)
+		if (!errors.isEmpty()) {
+			request.flash('registerError', errors.array()[0].msg)
+			return response.status(422).redirect('/auth/login#register')
 		}
 
+		const user = new User({
+			email,
+			name,
+			password: hashPassword,
+			cart: { items: [] }
+		})
+		await user.save()
+
+		request.flash('success', 'You registered successfully!')
+		response.redirect('/auth/login#login')
 
 	} catch (e) {
 		console.log(e)
