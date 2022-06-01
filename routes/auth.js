@@ -135,6 +135,7 @@ router.get('/reset_password', async (request, response) => {
 		})
 
 		if (!user || user.resetTokenExp < Date.now()) {
+			request.flash('error', 'Something went wrong! Try it again!')
 			return response.redirect('/auth/login')
 		}
 		response.render('auth/password', {
@@ -143,6 +144,35 @@ router.get('/reset_password', async (request, response) => {
 			userId: user._id.toString(),
 			token
 		})
+	} catch (e) {
+		console.log(e)
+	}
+})
+
+router.post('/reset_password', async (request, response) => {
+	try {
+		const { password, userId, token } = request.body
+		const hashPassword = await bcrypt.hash(password, 10)
+		c
+		const user = await User.findOne({
+			_id: userId,
+			resetToken: token
+		})
+
+		if (!user || user.resetTokenExp < Date.now()) {
+			request.flash('error', 'Something went wrong! Try it again!')
+			return response.redirect('/auth/login')
+		}
+
+		user.password = hashPassword
+		user.resetToken = undefined
+		user.resetTokenExp = undefined
+
+		await user.save()
+
+		request.flash('success', 'Your password has been altered successfully!')
+		response.redirect('/auth/login')
+
 	} catch (e) {
 		console.log(e)
 	}
