@@ -10,8 +10,6 @@ exports.getLogin = (req, res) => {
 	res.render('auth/login', {
 		title: 'Login',
 		isLoginPage: true,
-		loginError: req.flash('loginError'),
-		registerError: req.flash('registerError'),
 		success: req.flash('success')
 	})
 }
@@ -40,13 +38,24 @@ exports.login = async function (req, res) {
 			}
 
 		}
-		req.flash('loginError', 'Wrong email or paassword!')
-		res.redirect('/auth/login#login')
+		req.flash('error',)
+		res.render('auth/login', {
+			title: 'Login',
+			isLoginPage: true,
+			error: 'Wrong email or paassword!',
+			email: email
+		})
 
 	} catch (e) {
 		console.log(e)
 	}
 }
+exports.getRegister = function (req, res) {
+	res.render('auth/register', {
+		title: 'Registration'
+	})
+}
+
 exports.register = async function (req, res) {
 	try {
 		const { email, password, name } = req.body
@@ -54,8 +63,11 @@ exports.register = async function (req, res) {
 
 		const errors = validationResult(req)
 		if (!errors.isEmpty()) {
-			req.flash('registerError', errors.array()[0].msg)
-			return res.status(422).redirect('/auth/login#register')
+			return res.status(422).render('auth/register', {
+				title: 'Register',
+				error: errors.array()[0].msg,
+				data: req.body
+			})
 		}
 
 		const user = new User({
@@ -67,7 +79,7 @@ exports.register = async function (req, res) {
 		await user.save()
 
 		req.flash('success', 'You registered successfully!')
-		res.redirect('/auth/login#login')
+		res.redirect('/auth/login')
 
 	} catch (e) {
 		console.log(e)

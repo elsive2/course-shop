@@ -6,6 +6,7 @@ const controller = require('../controllers/authController')
 
 router.get('/login', controller.getLogin)
 router.post('/login', controller.login)
+router.get('/register', controller.getRegister)
 router.post('/register', registerValidator, controller.register)
 router.post('/logout', auth, controller.logout)
 router.get('/reset', auth, controller.getReset)
