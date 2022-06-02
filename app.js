@@ -1,72 +1,21 @@
-const cfg = require('./config/application')
 const express = require('express')
 const path = require('path')
-const mongoose = require('mongoose')
-const Handlebars = require('handlebars')
-const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
-const session = require('express-session')
-const MongoStore = require('connect-mongodb-session')(session)
-const authMiddleware = require('./middlewares/auth')
-
 const app = express()
-const hbs = require('express-handlebars').create({
-	defaultLayout: 'main',
-	extname: 'hbs',
-	handlebars: allowInsecurePrototypeAccess(Handlebars),
-	helpers: require('./utils/hbs-helpers')
-})
+
+const middlewares = require('./bootstrap/middlewares')
+const routes = require('./bootstrap/routes')
+const start = require('./bootstrap/start')
+const session = require('./bootstrap/session')
+const hbs = require('./bootstrap/handlebars')
 
 app.engine('hbs', hbs.engine)
 app.set('view engine', 'hbs')
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/public/images', express.static(path.join(__dirname, 'public', 'images')))
-app.use(express.urlencoded({
-	extended: true
-}))
+app.use(express.urlencoded({ extended: true }))
 
-app.use(session({
-	secret: cfg.SESSION_SECRET,
-	resave: false,
-	saveUninitialized: false,
-	store: new MongoStore({
-		collection: 'sessions',
-		uri: cfg.CONNECTION
-	})
-}))
-
-// middlewares
-app.use(require('csurf')())
-app.use(require('./middlewares/variables'))
-app.use(require('./middlewares/user'))
-app.use(require('connect-flash')())
-app.use(require('./middlewares/file').single('avatar'))
-
-// routes
-app.use('/', require('./routes/home'))
-app.use('/courses', require('./routes/courses'))
-app.use('/auth', require('./routes/auth'))
-app.use('/cart', authMiddleware, require('./routes/cart'))
-app.use('/orders', authMiddleware, require('./routes/orders'))
-app.use('/profile', authMiddleware, require('./routes/profile'))
-
-// handle not found exception
-app.get('*', (req, res) => {
-	res.status(404).render('404', {
-		title: 'Page not found!'
-	})
-})
-
-
-async function start() {
-	try {
-		await mongoose.connect(cfg.CONNECTION)
-
-		app.listen(cfg.PORT, () => {
-			console.log(`Server is running on port ${cfg.PORT}...`)
-		})
-	} catch (e) {
-		console.log(e)
-	}
-}
-start()
+session(app)
+middlewares(app)
+routes(app)
+start(app)
