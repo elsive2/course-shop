@@ -6,7 +6,7 @@ const Handlebars = require('handlebars')
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
 const session = require('express-session')
 const MongoStore = require('connect-mongodb-session')(session)
-
+const authMiddleware = require('./middlewares/auth')
 
 const app = express()
 const hbs = require('express-handlebars').create({
@@ -45,10 +45,10 @@ app.use(require('./middlewares/file').single('avatar'))
 // routes
 app.use('/', require('./routes/home'))
 app.use('/courses', require('./routes/courses'))
-app.use('/cart', require('./middlewares/auth'), require('./routes/cart'))
-app.use('/orders', require('./middlewares/auth'), require('./routes/orders'))
 app.use('/auth', require('./routes/auth'))
-app.use('/profile', require('./routes/profile'))
+app.use('/cart', authMiddleware, require('./routes/cart'))
+app.use('/orders', authMiddleware, require('./routes/orders'))
+app.use('/profile', authMiddleware, require('./routes/profile'))
 
 // handle not found exception
 app.get('*', (req, res) => {
