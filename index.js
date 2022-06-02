@@ -47,6 +47,13 @@ app.use('/cart', require('./middlewares/auth'), require('./routes/cart'))
 app.use('/orders', require('./middlewares/auth'), require('./routes/orders'))
 app.use('/auth', require('./routes/auth'))
 
+// handle not found exception
+app.get('*', (request, response) => {
+	response.status(404).render('404', {
+		title: 'Page not found!'
+	})
+})
+
 
 async function start() {
 	try {

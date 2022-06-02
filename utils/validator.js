@@ -13,14 +13,14 @@ exports.registerValidator = [
 			console.log(e)
 		}
 	}).normalizeEmail(),
-	body('password', 'Password is incorrect!').isLength({ min: 8, max: 64 }).trim(),
+	body('password', 'Password is incorrect!').isLength({ min: 8, max: 64 }),
 	body('password_confirmation', 'Passwords must be the same!').custom((value, { req }) => {
 		if (value !== req.body.password) {
 			throw new Error('Passwords must be the same!')
 		}
 		return true
-	}).trim(),
-	body('name', 'Name is incorrect!').isLength({ min: 2, max: 64 })
+	}),
+	body('name', 'Name is incorrect!').isLength({ min: 2, max: 64 }).trim()
 ]
 
 exports.courseValidator = [

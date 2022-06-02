@@ -94,10 +94,10 @@ router.post('/edit', auth, courseValidator, async (request, response) => {
 				course
 			})
 		}
-		// if (!isOwner(course, request.user)) {
-		// 	request.flash('error', 'Nice try bro =)')
-		// 	return response.redirect('/courses')
-		// }
+		if (!isOwner(course, request.user)) {
+			request.flash('error', 'Nice try bro =)')
+			return response.redirect('/courses')
+		}
 
 		course.title = request.body.title
 		course.price = request.body.price
