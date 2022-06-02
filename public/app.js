@@ -29,7 +29,7 @@ if ($cart) {
 				headers: {
 					'CSRF-Token': csrfToken
 				}
-			}).then(response => response.json())
+			}).then(res => res.json())
 				.then(cart => {
 					if (cart.courses.length !== 0) {
 						const html = cart.courses.map(c => {

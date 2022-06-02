@@ -1,6 +1,6 @@
-module.exports = function (request, response, next) {
-	response.locals.isAuth = request.session.isAuthenticated
-	response.locals.csrf = request.csrfToken()
+module.exports = function (req, res, next) {
+	res.locals.isAuth = req.session.isAuthenticated
+	res.locals.csrf = req.csrfToken()
 
 	next()
 }

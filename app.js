@@ -51,8 +51,8 @@ app.use('/auth', require('./routes/auth'))
 app.use('/profile', require('./routes/profile'))
 
 // handle not found exception
-app.get('*', (request, response) => {
-	response.status(404).render('404', {
+app.get('*', (req, res) => {
+	res.status(404).render('404', {
 		title: 'Page not found!'
 	})
 })

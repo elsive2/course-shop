@@ -10,57 +10,57 @@ const emailService = require('../services/email')
 const { validationResult } = require('express-validator')
 const { registerValidator } = require('../utils/validator')
 
-router.get('/login', (request, response) => {
-	response.render('auth/login', {
+router.get('/login', (req, res) => {
+	res.render('auth/login', {
 		title: 'Login',
 		isLoginPage: true,
-		loginError: request.flash('loginError'),
-		registerError: request.flash('registerError'),
-		success: request.flash('success')
+		loginError: req.flash('loginError'),
+		registerError: req.flash('registerError'),
+		success: req.flash('success')
 	})
 })
 
-router.post('/login', async (request, response) => {
+router.post('/login', async (req, res) => {
 	try {
-		const { email, password } = request.body
+		const { email, password } = req.body
 		const candidate = await User.findOne({ email })
 
 		if (candidate) {
 			const passwordsAreSame = await bcrypt.compare(password, candidate.password)
 
 			if (passwordsAreSame) {
-				request.session.user = candidate
-				request.session.isAuthenticated = true
-				return request.session.save(err => {
+				req.session.user = candidate
+				req.session.isAuthenticated = true
+				return req.session.save(err => {
 					if (err) throw err
 
 					emailService.getInstance().sendMail(emailOptions(email), (error, info) => {
 						if (err) throw err
 
-						request.flash('success', 'You signed in successfully!')
-						response.redirect('/')
+						req.flash('success', 'You signed in successfully!')
+						res.redirect('/')
 					})
 				})
 			}
 
 		}
-		request.flash('loginError', 'Wrong email or paassword!')
-		response.redirect('/auth/login#login')
+		req.flash('loginError', 'Wrong email or paassword!')
+		res.redirect('/auth/login#login')
 
 	} catch (e) {
 		console.log(e)
 	}
 })
 
-router.post('/register', registerValidator, async (request, response) => {
+router.post('/register', registerValidator, async (req, res) => {
 	try {
-		const { email, password, name } = request.body
+		const { email, password, name } = req.body
 		const hashPassword = await bcrypt.hash(password, 10)
 
-		const errors = validationResult(request)
+		const errors = validationResult(req)
 		if (!errors.isEmpty()) {
-			request.flash('registerError', errors.array()[0].msg)
-			return response.status(422).redirect('/auth/login#register')
+			req.flash('registerError', errors.array()[0].msg)
+			return res.status(422).redirect('/auth/login#register')
 		}
 
 		const user = new User({
@@ -71,37 +71,37 @@ router.post('/register', registerValidator, async (request, response) => {
 		})
 		await user.save()
 
-		request.flash('success', 'You registered successfully!')
-		response.redirect('/auth/login#login')
+		req.flash('success', 'You registered successfully!')
+		res.redirect('/auth/login#login')
 
 	} catch (e) {
 		console.log(e)
 	}
 })
 
-router.post('/logout', auth, async (request, response) => {
-	request.session.destroy(() => {
-		response.redirect('/')
+router.post('/logout', auth, async (req, res) => {
+	req.session.destroy(() => {
+		res.redirect('/')
 	})
 })
 
-router.get('/reset', (request, response) => {
-	response.render('auth/reset', {
+router.get('/reset', (req, res) => {
+	res.render('auth/reset', {
 		title: 'Reset password',
-		error: request.flash('error')
+		error: req.flash('error')
 	})
 })
 
-router.post('/reset', (request, response) => {
+router.post('/reset', (req, res) => {
 	try {
 		crypto.randomBytes(32, async (err, buffer) => {
 			if (err) {
-				request.flash('error', 'Something went wrong! Try it later!')
-				return response.redirect('/auth/reset')
+				req.flash('error', 'Something went wrong! Try it later!')
+				return res.redirect('/auth/reset')
 			}
 
 			const token = buffer.toString('hex')
-			const user = await User.findOne({ email: request.body.email })
+			const user = await User.findOne({ email: req.body.email })
 
 			if (user) {
 				user.resetToken = token
@@ -111,12 +111,12 @@ router.post('/reset', (request, response) => {
 				emailService.getInstance().sendMail(resetOptions(user.email, token), (err, info) => {
 					if (err) throw err
 
-					request.flash('success', `Confirm password reset that was sent to the email - ${user.email}`)
-					response.redirect('/auth/login')
+					req.flash('success', `Confirm password reset that was sent to the email - ${user.email}`)
+					res.redirect('/auth/login')
 				})
 			} else {
-				request.flash('error', 'There is no such a user with this email')
-				return response.redirect('/auth/reset')
+				req.flash('error', 'There is no such a user with this email')
+				return res.redirect('/auth/reset')
 			}
 		})
 	} catch (e) {
@@ -124,11 +124,11 @@ router.post('/reset', (request, response) => {
 	}
 })
 
-router.get('/reset_password', async (request, response) => {
-	const token = request.query.token
+router.get('/reset_password', async (req, res) => {
+	const token = req.query.token
 
 	if (!token) {
-		return response.redirect('/auth/login')
+		return res.redirect('/auth/login')
 	}
 	try {
 		const user = await User.findOne({
@@ -136,12 +136,12 @@ router.get('/reset_password', async (request, response) => {
 		})
 
 		if (!user || user.resetTokenExp < Date.now()) {
-			request.flash('error', 'Something went wrong! Try it again!')
-			return response.redirect('/auth/login')
+			req.flash('error', 'Something went wrong! Try it again!')
+			return res.redirect('/auth/login')
 		}
-		response.render('auth/password', {
+		res.render('auth/password', {
 			title: 'Change your password',
-			error: request.flash('error'),
+			error: req.flash('error'),
 			userId: user._id.toString(),
 			token
 		})
@@ -150,9 +150,9 @@ router.get('/reset_password', async (request, response) => {
 	}
 })
 
-router.post('/reset_password', async (request, response) => {
+router.post('/reset_password', async (req, res) => {
 	try {
-		const { password, userId, token } = request.body
+		const { password, userId, token } = req.body
 		const hashPassword = await bcrypt.hash(password, 10)
 		c
 		const user = await User.findOne({
@@ -161,8 +161,8 @@ router.post('/reset_password', async (request, response) => {
 		})
 
 		if (!user || user.resetTokenExp < Date.now()) {
-			request.flash('error', 'Something went wrong! Try it again!')
-			return response.redirect('/auth/login')
+			req.flash('error', 'Something went wrong! Try it again!')
+			return res.redirect('/auth/login')
 		}
 
 		user.password = hashPassword
@@ -171,8 +171,8 @@ router.post('/reset_password', async (request, response) => {
 
 		await user.save()
 
-		request.flash('success', 'Your password has been altered successfully!')
-		response.redirect('/auth/login')
+		req.flash('success', 'Your password has been altered successfully!')
+		res.redirect('/auth/login')
 
 	} catch (e) {
 		console.log(e)

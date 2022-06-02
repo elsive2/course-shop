@@ -6,20 +6,20 @@ const permittedExtensions = [
 	'image/jpg'
 ]
 
-const fileFilter = (request, file, callback) => {
+const fileFilter = (req, file, cb) => {
 	if (permittedExtensions.includes(file.mimetype)) {
-		callback(null, true)
+		cb(null, true)
 	} else {
-		callback(null, false)
+		cb(null, false)
 	}
 }
 
 const storage = multer.diskStorage({
-	destination(request, file, callback) {
-		callback(null, 'public/images')
+	destination(req, file, cb) {
+		cb(null, 'public/images')
 	},
-	filename(request, file, callback) {
-		callback(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
+	filename(req, file, cb) {
+		cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
 	}
 })
 

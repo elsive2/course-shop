@@ -3,28 +3,28 @@ const router = Router()
 const auth = require('../middlewares/auth')
 const User = require('../models/user')
 
-router.get('/', auth, (request, response) => {
-	response.render('profile', {
+router.get('/', auth, (req, res) => {
+	res.render('profile', {
 		title: 'Profile',
 		isProfilePage: true,
-		user: request.user.toObject()
+		user: req.user.toObject()
 	})
 })
 
-router.post('/', async (request, response) => {
+router.post('/', async (req, res) => {
 	try {
-		const user = await User.findById(request.user._id)
+		const user = await User.findById(req.user._id)
 		const toChange = {
-			name: request.body.name,
+			name: req.body.name,
 		}
 
-		if (request.file) {
-			toChange.avatarUrl = request.file.path
+		if (req.file) {
+			toChange.avatarUrl = req.file.path
 		}
 
 		Object.assign(user, toChange)
 		await user.save()
-		response.redirect('/profile')
+		res.redirect('/profile')
 	} catch (e) {
 		console.log(e)
 	}

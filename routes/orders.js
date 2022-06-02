@@ -2,12 +2,12 @@ const { Router } = require('express')
 const Order = require('../models/order')
 const router = Router()
 
-router.get('/', async (request, response) => {
+router.get('/', async (req, res) => {
 	try {
-		const orders = await Order.find({ 'user.userId': request.user._id })
+		const orders = await Order.find({ 'user.userId': req.user._id })
 			.populate('user.userId')
 
-		response.render('orders', {
+		res.render('orders', {
 			isOrderPage: true,
 			title: 'Orders',
 			orders: orders.map(order => ({
@@ -22,9 +22,9 @@ router.get('/', async (request, response) => {
 	}
 })
 
-router.post('/', async (request, response) => {
+router.post('/', async (req, res) => {
 	try {
-		const user = await request.user.populate('cart.items.courseId')
+		const user = await req.user.populate('cart.items.courseId')
 		const courses = user.cart.items.map(item => ({
 			course: { ...item.courseId._doc },
 			count: item.count
@@ -32,17 +32,17 @@ router.post('/', async (request, response) => {
 
 		const order = new Order({
 			user: {
-				name: request.user.name,
-				email: request.user.email,
-				userId: request.user
+				name: req.user.name,
+				email: req.user.email,
+				userId: req.user
 			},
 			courses
 		})
 
 		await order.save()
-		await request.user.clearCart()
+		await req.user.clearCart()
 
-		response.redirect('/orders')
+		res.redirect('/orders')
 	} catch (e) {
 		console.log(e)
 	}

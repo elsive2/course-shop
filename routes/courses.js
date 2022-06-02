@@ -9,114 +9,114 @@ function isOwner(course, user) {
 	return course.userId.toString() == user._id.toString()
 }
 
-router.get('/', async (request, response) => {
+router.get('/', async (req, res) => {
 	const courses = await Course.find()
 		.lean()
 		.populate('userId', ['name', 'email'])
 
-	response.render('courses', {
+	res.render('courses', {
 		title: 'Courses page',
 		isCoursesPage: true,
-		userId: request.user ? request.user._id.toString() : null,
-		error: request.flash('error'),
+		userId: req.user ? req.user._id.toString() : null,
+		error: req.flash('error'),
 		courses
 	})
 })
 
-router.get('/create', auth, (request, response) => {
-	response.render('create', {
+router.get('/create', auth, (req, res) => {
+	res.render('create', {
 		title: 'Create a new course',
 		isCreatePage: true,
 	})
 })
 
-router.post('/create', auth, courseValidator, async (request, response) => {
-	request.body.userId = request.user
-	const course = new Course(request.body)
+router.post('/create', auth, courseValidator, async (req, res) => {
+	req.body.userId = req.user
+	const course = new Course(req.body)
 
-	const errors = validationResult(request)
+	const errors = validationResult(req)
 	if (!errors.isEmpty()) {
-		return response.status(422).render('create', {
+		return res.status(422).render('create', {
 			title: 'Create a new course',
 			isCreatePage: true,
 			error: errors.array()[0].msg,
-			data: request.body
+			data: req.body
 		})
 	}
 
 	try {
 		await course.save()
-		response.redirect('/courses')
+		res.redirect('/courses')
 	} catch (e) {
 		console.log(e)
 	}
 })
 
-router.get('/:id', async (request, response) => {
-	if (request.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-		const course = await Course.findById(request.params.id).lean()
+router.get('/:id', async (req, res) => {
+	if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+		const course = await Course.findById(req.params.id).lean()
 
-		return response.render('course', {
+		return res.render('course', {
 			title: 'Single course',
 			course
 		})
 	}
-	return response.status(404)
+	return res.status(404)
 		.redirect('/courses')
 })
 
-router.get('/:id/edit', auth, async (request, response) => {
-	if (!request.query.allow) {
-		return response.redirect('/courses')
+router.get('/:id/edit', auth, async (req, res) => {
+	if (!req.query.allow) {
+		return res.redirect('/courses')
 	}
-	const course = await Course.findById(request.params.id).lean()
+	const course = await Course.findById(req.params.id).lean()
 
-	if (!isOwner(course, request.user)) {
-		request.flash('error', 'Nice try bro =)')
-		return response.redirect('/courses')
+	if (!isOwner(course, req.user)) {
+		req.flash('error', 'Nice try bro =)')
+		return res.redirect('/courses')
 	}
 
-	response.render('edit', {
+	res.render('edit', {
 		title: `Edit ${course.title}`,
 		course
 	})
 })
 
-router.post('/edit', auth, courseValidator, async (request, response) => {
+router.post('/edit', auth, courseValidator, async (req, res) => {
 	try {
-		const course = await Course.findById(request.body.id)
-		const errors = validationResult(request)
+		const course = await Course.findById(req.body.id)
+		const errors = validationResult(req)
 
 		if (!errors.isEmpty()) {
-			return response.status(422).render('edit', {
+			return res.status(422).render('edit', {
 				title: `Edit ${course.title}`,
 				error: errors.array()[0].msg,
 				course
 			})
 		}
-		if (!isOwner(course, request.user)) {
-			request.flash('error', 'Nice try bro =)')
-			return response.redirect('/courses')
+		if (!isOwner(course, req.user)) {
+			req.flash('error', 'Nice try bro =)')
+			return res.redirect('/courses')
 		}
 
-		course.title = request.body.title
-		course.price = request.body.price
-		course.image = request.body.image
+		course.title = req.body.title
+		course.price = req.body.price
+		course.image = req.body.image
 
 		await course.save()
-		response.redirect('/courses')
+		res.redirect('/courses')
 	} catch (e) {
 		console.log(e)
 	}
 })
 
-router.post('/remove', auth, async (request, response) => {
+router.post('/remove', auth, async (req, res) => {
 	try {
 		await Course.deleteOne({
-			_id: request.body.id,
-			userId: request.user._id
+			_id: req.body.id,
+			userId: req.user._id
 		})
-		response.redirect('/courses')
+		res.redirect('/courses')
 	} catch (e) {
 		console.log(e)
 	}

@@ -1,8 +1,8 @@
 const User = require('../models/user')
 
-module.exports = async function (request, response, next) {
-	if (request.session.user) {
-		request.user = await User.findById(request.session.user._id)
+module.exports = async function (req, res, next) {
+	if (req.session.user) {
+		req.user = await User.findById(req.session.user._id)
 	}
 	next()
 }

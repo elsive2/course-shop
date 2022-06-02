@@ -17,36 +17,36 @@ function calculatePrice(courses) {
 	}, 0)
 }
 
-router.post('/add', async (request, response) => {
-	const course = await Course.findById(request.body.id)
-	await request.user.addToCart(course)
-	response.redirect('/courses')
+router.post('/add', async (req, res) => {
+	const course = await Course.findById(req.body.id)
+	await req.user.addToCart(course)
+	res.redirect('/courses')
 })
 
-router.get('/', async (request, response) => {
+router.get('/', async (req, res) => {
 	viewOptions = {
 		title: 'Cart',
 		isCartPage: true
 	}
 
 	try {
-		const user = await request.user.populate('cart.items.courseId')
+		const user = await req.user.populate('cart.items.courseId')
 		const courses = formatCourses(user.cart)
 		const price = calculatePrice(courses)
 
 		viewOptions.price = price
 		viewOptions.courses = courses
 	} catch (e) { } finally {
-		response.render('cart', viewOptions)
+		res.render('cart', viewOptions)
 	}
 })
 
-router.delete('/remove/:id', async (request, response) => {
-	await request.user.removeFromCart(request.params.id)
-	const user = await request.user.populate('cart.items.courseId')
+router.delete('/remove/:id', async (req, res) => {
+	await req.user.removeFromCart(req.params.id)
+	const user = await req.user.populate('cart.items.courseId')
 	const courses = formatCourses(user.cart)
 
-	response.json({
+	res.json({
 		courses, price: calculatePrice(courses)
 	})
 })
