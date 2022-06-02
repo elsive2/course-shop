@@ -29,6 +29,7 @@ const User = new Schema({
 			}
 		]
 	},
+	avatarUrl: String,
 	resetToken: String,
 	resetTokenExp: Date
 })

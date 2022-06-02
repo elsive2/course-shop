@@ -2,36 +2,35 @@
 
 <div class="row">
 	<div class="col s6">
-		<img class="avatar" src="https://i.pinimg.com/originals/fa/c5/9c/fac59cceb286c0e57ff3ff654938ef20.jpg" alt="">
+		{{#if user.avatarUrl}}
+		<img class="avatar" src="/{{user.avatarUrl}}" alt="avatar-{{user.name}}">
+		{{else}}
+		<img class="avatar"
+			src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAIEAgQMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAAAQYEBQcDAv/EADgQAAIBAgIGBwYEBwAAAAAAAAABAgMEBREGITFBUVISFiJhcZLREzKBkbHhFCNEoTM1QmJyc8H/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A34AAAAAAAAAAAAAAAAAAAAAAAAAAAAAASk20ks23kkt4EGZb4XfXMVKja1ZRe9rJP4stOBYBStIQr3cVO5evJ61T8O/vN6BzuthGI0I9KpZ1ejxiull8jBOo5azVYzglviFOU4pU7lLs1EtvcwKGD7rUp0as6VWLjODylF7mfAAAAAAAAAAAAAAANzoraxuMVU5LONGPT18d31zNMWPQqajeXMHlnKmmvg/uBbtiCG0kAQ9hJCXECoaZWqhcUbmOp1Y9GeW9rZ+30K6W3TaS/D2sNWbm3+33KkAAAAAAAAAAAAAADMwm9eH39K4yzinlNLfF7TDAHT6NSFWnGpTmpwks4yW9H02ULB8buMN7GXtaDeum3s709xZrfSPDayTnWdKT/pnF/XYBuEQ2km20suJq6+kOGUotq49o+EIt5/8ACuYzpBWv4yo0Iujbv3tfan49wHjpFiEcQxBum86NNdGD48WasAAAAAAAAAAAAAAAA2uE4Hc4ilUf5Vvn77WuXgi12GCWNlk4UVOfPU7T+3wApFDD7y4ydG1rTT3qDy+ewy4aPYrL9Ll41I+pfgBQpaO4pH9On4VI+pi18MvrdZ1bSslxUc180dHAHLQdEvsLsr3P21CLlzx7MvmVfFtHK9kpVbduvQWt80fHj8ANGAAAAAAAAAABu9G8IV/UdxcRzt6byy53w8DSHScOtY2djRt4r3I6+9738wPeMUkklklsR9AMCGwkEiQBDe4kAQlkSCGBUtJ8HjSTvrWOUG/zYLYv7kVs6fWpQrUp0qizhNOMlxTOaXNJ0LirRltpzcfk8gPMAAAAB40qrnXrQeXYaya70exjUE1d3LyaT6Ot79RkgfdH+NT/AMl9Tp5y6L6MlJbU8zd9acR5aHkfqBdWySk9acQ5KHkfqT1qxDloeV+oF1Ib4FK61Yhy0PI/UdacQ5KHkfqBdUiSk9asR5bfyP1HWnEOWh5H6gXYFJ604hyUPI/UdasR5bfyP1AurOd41/N7z/azP604hn7lDyP1NRc1p3NxUr1MunUl0n0VqzA8gAAAAHhRz/FXGaeXZybW3VuPcx6MZK7uZNPJ9DJ5bdRkAAAAAAAAAAAAAAAAAAAAAADcNwAAAAOHgAAAQAAAANwAAcAAAewl7gAIAAH/2Q=="
+			alt="">
+		{{/if}}
 	</div>
-	<img style="display: none;"
-		src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAIEAgQMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAAAQYEBQcDAv/EADgQAAIBAgIGBwYEBwAAAAAAAAABAgMEBREGITFBUVISFiJhcZLREzKBkbHhFCNEoTM1QmJyc8H/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A34AAAAAAAAAAAAAAAAAAAAAAAAAAAAAASk20ks23kkt4EGZb4XfXMVKja1ZRe9rJP4stOBYBStIQr3cVO5evJ61T8O/vN6BzuthGI0I9KpZ1ejxiull8jBOo5azVYzglviFOU4pU7lLs1EtvcwKGD7rUp0as6VWLjODylF7mfAAAAAAAAAAAAAAANzoraxuMVU5LONGPT18d31zNMWPQqajeXMHlnKmmvg/uBbtiCG0kAQ9hJCXECoaZWqhcUbmOp1Y9GeW9rZ+30K6W3TaS/D2sNWbm3+33KkAAAAAAAAAAAAAADMwm9eH39K4yzinlNLfF7TDAHT6NSFWnGpTmpwks4yW9H02ULB8buMN7GXtaDeum3s709xZrfSPDayTnWdKT/pnF/XYBuEQ2km20suJq6+kOGUotq49o+EIt5/8ACuYzpBWv4yo0Iujbv3tfan49wHjpFiEcQxBum86NNdGD48WasAAAAAAAAAAAAAAAA2uE4Hc4ilUf5Vvn77WuXgi12GCWNlk4UVOfPU7T+3wApFDD7y4ydG1rTT3qDy+ewy4aPYrL9Ll41I+pfgBQpaO4pH9On4VI+pi18MvrdZ1bSslxUc180dHAHLQdEvsLsr3P21CLlzx7MvmVfFtHK9kpVbduvQWt80fHj8ANGAAAAAAAAAABu9G8IV/UdxcRzt6byy53w8DSHScOtY2djRt4r3I6+9738wPeMUkklklsR9AMCGwkEiQBDe4kAQlkSCGBUtJ8HjSTvrWOUG/zYLYv7kVs6fWpQrUp0qizhNOMlxTOaXNJ0LirRltpzcfk8gPMAAAAB40qrnXrQeXYaya70exjUE1d3LyaT6Ot79RkgfdH+NT/AMl9Tp5y6L6MlJbU8zd9acR5aHkfqBdWySk9acQ5KHkfqT1qxDloeV+oF1Ib4FK61Yhy0PI/UdacQ5KHkfqBdUiSk9asR5bfyP1HWnEOWh5H6gXYFJ604hyUPI/UdasR5bfyP1AurOd41/N7z/azP604hn7lDyP1NRc1p3NxUr1MunUl0n0VqzA8gAAAAHhRz/FXGaeXZybW3VuPcx6MZK7uZNPJ9DJ5bdRkAAAAAAAAAAAAAAAAAAAAAADcNwAAAAOHgAAAQAAAANwAAcAAAewl7gAIAAH/2Q=="
-		alt="">
 	<div class="col s6">
-		<form action="/profile" method="POST">
+		<form action="/profile?_csrf={{csrf}}" method="POST" enctype="multipart/form-data">
 			<p>Your email is <strong>{{user.email}}</strong></p>
 
 			<div class="input-field">
-				<input name="name" id="name" type="text" class="validate" required>
+				<input name="name" id="name" type="text" class="validate" value="{{user.name}}" required>
 				<label for="name">Your name</label>
 				<span class="helper-text" data-error="Enter the name"></span>
 			</div>
 
-			<form action="#">
-				<div class="file-field input-field">
-					<div class="btn">
-						<span>Avatar</span>
-						<input type="file" multiple>
-					</div>
-					<div class="file-path-wrapper">
-						<input class="file-path validate" type="text" placeholder="Upload your avatar">
-					</div>
+			<div class="file-field input-field">
+				<div class="btn">
+					<span>Avatar</span>
+					<input type="file" name="avatar">
 				</div>
-			</form>
+				<div class="file-path-wrapper">
+					<input class="file-path validate" type="text" placeholder="Upload your avatar">
+				</div>
+			</div>
 
-			<input type="hidden" name="_csrf" value="{{csrf}}">
-
-			<button class="btn" type="submit">Change</button>
+			<input type="submit" class="btn">Change</input>
 		</form>
 	</div>
 </div>
