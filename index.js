@@ -46,6 +46,7 @@ app.use('/courses', require('./routes/courses'))
 app.use('/cart', require('./middlewares/auth'), require('./routes/cart'))
 app.use('/orders', require('./middlewares/auth'), require('./routes/orders'))
 app.use('/auth', require('./routes/auth'))
+app.use('/profile', require('./routes/profile'))
 
 // handle not found exception
 app.get('*', (request, response) => {

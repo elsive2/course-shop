@@ -23,6 +23,12 @@
 			<li><a href="/courses/create">Create a course</a></li>
 			{{/if}}
 
+			{{#if isProfilePage}}
+			<li class="active"><a href="/profile">Profile</a></li>
+			{{else}}
+			<li><a href="/profile">Profile</a></li>
+			{{/if}}
+
 			{{#if isCartPage}}
 			<li class="active"><a href="/cart">Cart</a></li>
 			{{else}}

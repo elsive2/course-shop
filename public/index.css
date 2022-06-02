@@ -67,3 +67,8 @@
 	background: rgba(0, 255, 0, 0.3);
 	color: green;
 }
+
+.avatar {
+	max-width: 300px;
+	height: auto;
+}
