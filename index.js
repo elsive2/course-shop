@@ -39,6 +39,7 @@ app.use(require('csurf')())
 app.use(require('./middlewares/variables'))
 app.use(require('./middlewares/user'))
 app.use(require('connect-flash')())
+app.use(require('./middlewares/file').single('avatar'))
 
 // routes
 app.use('/', require('./routes/home'))
