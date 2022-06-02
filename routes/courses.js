@@ -2,6 +2,8 @@ const { Router } = require('express')
 const router = Router()
 const Course = require('../models/course')
 const auth = require('../middlewares/auth')
+const { courseValidator } = require('../utils/validator')
+const { validationResult } = require('express-validator')
 
 function isOwner(course, user) {
 	return course.userId.toString() == user._id.toString()
@@ -28,9 +30,19 @@ router.get('/create', auth, (request, response) => {
 	})
 })
 
-router.post('/create', auth, async (request, response) => {
+router.post('/create', auth, courseValidator, async (request, response) => {
 	request.body.userId = request.user
 	const course = new Course(request.body)
+
+	const errors = validationResult(request)
+	if (!errors.isEmpty()) {
+		return response.status(422).render('create', {
+			title: 'Create a new course',
+			isCreatePage: true,
+			error: errors.array()[0].msg,
+			data: request.body
+		})
+	}
 
 	try {
 		await course.save()
@@ -70,14 +82,28 @@ router.get('/:id/edit', auth, async (request, response) => {
 	})
 })
 
-router.post('/edit', auth, async (request, response) => {
+router.post('/edit', auth, courseValidator, async (request, response) => {
 	try {
-		if (!isOwner(course, request.user)) {
-			request.flash('error', 'Nice try bro =)')
-			return response.redirect('/courses')
-		}
+		const course = await Course.findById(request.body.id)
+		const errors = validationResult(request)
 
-		await Course.findByIdAndUpdate(request.body.id, request.body)
+		if (!errors.isEmpty()) {
+			return response.status(422).render('edit', {
+				title: `Edit ${course.title}`,
+				error: errors.array()[0].msg,
+				course
+			})
+		}
+		// if (!isOwner(course, request.user)) {
+		// 	request.flash('error', 'Nice try bro =)')
+		// 	return response.redirect('/courses')
+		// }
+
+		course.title = request.body.title
+		course.price = request.body.price
+		course.image = request.body.image
+
+		await course.save()
 		response.redirect('/courses')
 	} catch (e) {
 		console.log(e)

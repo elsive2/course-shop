@@ -22,3 +22,9 @@ exports.registerValidator = [
 	}).trim(),
 	body('name', 'Name is incorrect!').isLength({ min: 2, max: 64 })
 ]
+
+exports.courseValidator = [
+	body('title', 'You title is too small!').isLength({ min: 2 }).trim(),
+	body('price', 'The price must be numeric!').isNumeric(),
+	body('image', 'Your image url is invalid!').isURL()
+]
