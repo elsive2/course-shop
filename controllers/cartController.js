@@ -1,19 +1,5 @@
 const Course = require('../models/course')
-
-function formatCourses(cart) {
-	return cart.items.map((item) => {
-		return {
-			...item.courseId._doc,
-			count: item.count
-		}
-	})
-}
-
-function calculatePrice(courses) {
-	return courses.reduce((total, course) => {
-		return total += course.price * course.count
-	}, 0)
-}
+const cartService = require('../services/cartService.js')
 
 exports.addToCart = async function (req, res) {
 	const course = await Course.findById(req.body.id)
@@ -29,8 +15,8 @@ exports.getCart = async function (req, res) {
 
 	try {
 		const user = await req.user.populate('cart.items.courseId')
-		const courses = formatCourses(user.cart)
-		const price = calculatePrice(courses)
+		const courses = cartService.formatCourses(user.cart)
+		const price = cartService.calculatePrice(courses)
 
 		viewOptions.price = price
 		viewOptions.courses = courses
@@ -42,9 +28,9 @@ exports.getCart = async function (req, res) {
 exports.deleteFromCart = async function (req, res) {
 	await req.user.removeFromCart(req.params.id)
 	const user = await req.user.populate('cart.items.courseId')
-	const courses = formatCourses(user.cart)
+	const courses = cartService.formatCourses(user.cart)
 
 	res.json({
-		courses, price: calculatePrice(courses)
+		courses, price: cartService.calculatePrice(courses)
 	})
 }
