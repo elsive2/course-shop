@@ -21,7 +21,7 @@
 				{{#if @root.isAuth}}
 
 				{{#equal @root.userId userId._id}}
-				<a href="/courses/{{ _id }}/edit?allow=true">Edit course</a>
+				<a href="/courses/{{ _id }}/edit">Edit course</a>
 				{{/equal}}
 
 				<form action="/cart/add" method="POST">

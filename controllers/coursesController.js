@@ -1,9 +1,6 @@
 const Course = require('../models/course')
 const { validationResult } = require('express-validator')
-
-function isOwner(course, user) {
-	return course.userId.toString() == user._id.toString()
-}
+const courseService = require('../services/courseService')
 
 exports.getAll = async function (req, res) {
 	const courses = await Course.find()
@@ -44,38 +41,45 @@ exports.create = async function (req, res) {
 		await course.save()
 		res.redirect('/courses')
 	} catch (e) {
-		console.log(e)
+		req.flash('error', 'Something went wrong!')
+		res.redirect('/courses')
 	}
 }
 
 exports.getById = async function (req, res) {
-	if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+	try {
+		if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+			throw new Error('Identificator is invalid!')
+		}
+
 		const course = await Course.findById(req.params.id).lean()
 
 		return res.render('course', {
 			title: 'Single course',
 			course
 		})
+	} catch (e) {
+		req.flash('error', e.message)
+		res.redirect('/courses')
 	}
-	return res.status(404)
-		.redirect('/courses')
 }
 
 exports.showEdit = async function (req, res) {
-	if (!req.query.allow) {
-		return res.redirect('/courses')
-	}
-	const course = await Course.findById(req.params.id).lean()
+	try {
+		const course = await Course.findById(req.params.id).lean()
 
-	if (!isOwner(course, req.user)) {
-		req.flash('error', 'Nice try bro =)')
-		return res.redirect('/courses')
-	}
+		if (!courseService.isOwner(course, req.user)) {
+			throw new Error('Nice try bro =)')
+		}
 
-	res.render('edit', {
-		title: `Edit ${course.title}`,
-		course
-	})
+		res.render('edit', {
+			title: `Edit ${course.title}`,
+			course
+		})
+	} catch (e) {
+		req.flash('error', e.message)
+		res.redirect('/courses')
+	}
 }
 
 exports.edit = async function (req, res) {
@@ -90,9 +94,8 @@ exports.edit = async function (req, res) {
 				course
 			})
 		}
-		if (!isOwner(course, req.user)) {
-			req.flash('error', 'Nice try bro =)')
-			return res.redirect('/courses')
+		if (!courseService.isOwner(course, req.user)) {
+			throw new Error('Nice try bro =)')
 		}
 
 		course.title = req.body.title
@@ -102,7 +105,8 @@ exports.edit = async function (req, res) {
 		await course.save()
 		res.redirect('/courses')
 	} catch (e) {
-		console.log(e)
+		req.flash('error', e.message)
+		res.redirect('/courses')
 	}
 }
 
@@ -114,6 +118,7 @@ exports.delete = async function (req, res) {
 		})
 		res.redirect('/courses')
 	} catch (e) {
-		console.log(e)
+		req.flash('error', 'Something went wrong!')
+		res.redirect('/courses')
 	}
 }
