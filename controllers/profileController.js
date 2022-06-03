@@ -10,19 +10,17 @@ exports.getProfile = function (req, res) {
 
 exports.changeProfile = async function (req, res) {
 	try {
-		const user = await User.findById(req.user._id)
-		const toChange = {
-			name: req.body.name,
-		}
+		const toChange = { name: req.body.name }
 
 		if (req.file) {
 			toChange.avatarUrl = req.file.path
 		}
 
-		Object.assign(user, toChange)
-		await user.save()
+		Object.assign(req.user, toChange)
+		await req.user.save()
 		res.redirect('/profile')
 	} catch (e) {
-		console.log(e)
+		req.flash('error', 'Something went wrong!')
+		res.redirect('/profile')
 	}
 }
