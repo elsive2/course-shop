@@ -1,4 +1,6 @@
 const Order = require('../models/order')
+const orderService = require('../services/orderService')
+const cartService = require('../services/cartService')
 
 exports.getAll = async function (req, res) {
 	try {
@@ -8,15 +10,11 @@ exports.getAll = async function (req, res) {
 		res.render('orders', {
 			isOrderPage: true,
 			title: 'Orders',
-			orders: orders.map(order => ({
-				...order._doc,
-				price: order.courses.reduce((total, course) => {
-					return total += course.count * course.course.price
-				}, 0)
-			}))
+			orders: orders.map(orderService.formatOrders)
 		})
 	} catch (e) {
-		console.log(e)
+		req.flash('error', e.message)
+		res.redirect('/')
 	}
 }
 
@@ -38,10 +36,11 @@ exports.create = async function (req, res) {
 		})
 
 		await order.save()
-		await req.user.clearCart()
+		await cartService.clearCart(req.user)
 
 		res.redirect('/orders')
 	} catch (e) {
-		console.log(e)
+		req.flash('error', e.message)
+		res.redirect('/')
 	}
 }
