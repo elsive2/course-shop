@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose')
 
-const User = new Schema({
+const userSchema = new Schema({
 	email: {
 		type: String,
 		required: true
@@ -34,4 +34,4 @@ const User = new Schema({
 	resetTokenExp: Date
 })
 
-module.exports = model('User', User)
+module.exports = model('User', userSchema)
