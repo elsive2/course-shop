@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
 const emailOptions = require('../emails/registration')
 const resetOptions = require('../emails/reset')
-const emailService = require('../services/email')
+const emailService = require('../services/emailService')
 const { validationResult } = require('express-validator')
 const User = require('../models/user')
 
@@ -15,39 +15,29 @@ exports.getLogin = (req, res) => {
 }
 
 exports.login = async function (req, res) {
+	const { email, password } = req.body
+
 	try {
-		const { email, password } = req.body
-		const candidate = await User.findOne({ email })
+		const user = await User.findOne({ email })
+		const passwordsAreSame = await bcrypt.compare(password, user.password)
 
-		if (candidate) {
-			const passwordsAreSame = await bcrypt.compare(password, candidate.password)
-
-			if (passwordsAreSame) {
-				req.session.user = candidate
-				req.session.isAuthenticated = true
-				return req.session.save(err => {
-					if (err) throw err
-
-					emailService.getInstance().sendMail(emailOptions(email), (error, info) => {
-						if (err) throw err
-
-						req.flash('success', 'You signed in successfully!')
-						res.redirect('/')
-					})
-				})
-			}
-
+		if (!user || !passwordsAreSame) {
+			throw new Error
 		}
-		req.flash('error',)
+
+		req.session.user = user
+		req.session.isAuthenticated = true
+		await req.session.save()
+
+		req.flash('success', 'You signed in successfully!')
+		res.redirect('/')
+	} catch (e) {
 		res.render('auth/login', {
 			title: 'Login',
 			isLoginPage: true,
 			error: 'Wrong email or paassword!',
-			email: email
+			email
 		})
-
-	} catch (e) {
-		console.log(e)
 	}
 }
 exports.getRegister = function (req, res) {
@@ -57,18 +47,16 @@ exports.getRegister = function (req, res) {
 }
 
 exports.register = async function (req, res) {
+	const { email, password, name } = req.body
 	try {
-		const { email, password, name } = req.body
 		const hashPassword = await bcrypt.hash(password, 10)
-
 		const errors = validationResult(req)
+
 		if (!errors.isEmpty()) {
-			return res.status(422).render('auth/register', {
-				title: 'Register',
-				error: errors.array()[0].msg,
-				data: req.body
-			})
+			throw new Error(errors.array()[0].msg)
 		}
+
+		await emailService.getInstance().sendMail(emailOptions(email))
 
 		const user = new User({
 			email,
@@ -82,14 +70,17 @@ exports.register = async function (req, res) {
 		res.redirect('/auth/login')
 
 	} catch (e) {
-		console.log(e)
+		res.status(422).render('auth/register', {
+			title: 'Register',
+			error: e,
+			data: req.body
+		})
 	}
 }
 
 exports.logout = async function (req, res) {
-	req.session.destroy(() => {
-		res.redirect('/')
-	})
+	await req.session.destroy()
+	res.redirect('/')
 }
 
 exports.getReset = function (req, res) {
@@ -101,51 +92,46 @@ exports.getReset = function (req, res) {
 
 exports.reset = async function (req, res) {
 	try {
-		crypto.randomBytes(32, async (err, buffer) => {
-			if (err) {
-				req.flash('error', 'Something went wrong! Try it later!')
-				return res.redirect('/auth/reset')
-			}
+		const buffer = crypto.randomBytes(32)
+		const token = buffer.toString('hex')
+		const user = await User.findOne({ email: req.body.email })
 
-			const token = buffer.toString('hex')
-			const user = await User.findOne({ email: req.body.email })
+		if (!user) {
+			throw new Error('There is no such a user with this email')
+		}
 
-			if (user) {
-				user.resetToken = token
-				user.resetTokenExp = Date.now() + 60 * 60 * 1000
-				await user.save()
+		user.resetToken = token
+		user.resetTokenExp = Date.now() + 60 * 60 * 1000
 
-				emailService.getInstance().sendMail(resetOptions(user.email, token), (err, info) => {
-					if (err) throw err
+		await user.save()
+		await emailService.getInstance().sendMail(resetOptions(user.email, token))
 
-					req.flash('success', `Confirm password reset that was sent to the email - ${user.email}`)
-					res.redirect('/auth/login')
-				})
-			} else {
-				req.flash('error', 'There is no such a user with this email')
-				return res.redirect('/auth/reset')
-			}
-		})
+		req.flash('success', `Confirm password reset that was sent to the email - ${user.email}`)
+		res.redirect('/auth/login')
 	} catch (e) {
-		console.log(e)
+		req.flash('error', e.message)
+		res.redirect('/auth/reset')
 	}
 }
 
 exports.getResetPassword = async function (req, res) {
-	const token = req.query.token
-
-	if (!token) {
-		return res.redirect('/auth/login')
-	}
 	try {
+		const token = req.query.token
+		if (!token) {
+			throw new Error('Something went wrong with token')
+		}
+
 		const user = await User.findOne({
 			resetToken: token,
 		})
 
-		if (!user || user.resetTokenExp < Date.now()) {
-			req.flash('error', 'Something went wrong! Try it again!')
-			return res.redirect('/auth/login')
+		if (!user) {
+			throw new Error('Something went wrong with token')
 		}
+		if (user.resetTokenExp < Date.now()) {
+			throw new Error('error', 'Token has inspired! =(')
+		}
+
 		res.render('auth/password', {
 			title: 'Change your password',
 			error: req.flash('error'),
@@ -153,23 +139,31 @@ exports.getResetPassword = async function (req, res) {
 			token
 		})
 	} catch (e) {
-		console.log(e)
+		req.flash('error', e.message)
+		res.redirect('/auth/login')
 	}
 }
 
 exports.resetPassword = async function (req, res) {
+	const { password, userId, token } = req.body
 	try {
-		const { password, userId, token } = req.body
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			req.flash('error', errors.array()[0].msg)
+			return res.status(422).redirect(`/auth/reset_password?token=${token}`)
+		}
+
 		const hashPassword = await bcrypt.hash(password, 10)
-		c
 		const user = await User.findOne({
 			_id: userId,
 			resetToken: token
 		})
 
-		if (!user || user.resetTokenExp < Date.now()) {
-			req.flash('error', 'Something went wrong! Try it again!')
-			return res.redirect('/auth/login')
+		if (!user) {
+			throw new Error('Something went wrong!')
+		}
+		if (user.resetTokenExp < Date.now()) {
+			throw new Error('Token has inspired! =(')
 		}
 
 		user.password = hashPassword
@@ -182,6 +176,7 @@ exports.resetPassword = async function (req, res) {
 		res.redirect('/auth/login')
 
 	} catch (e) {
-		console.log(e)
+		req.flash('error', e.message)
+		res.redirect('/auth/login')
 	}
 }
