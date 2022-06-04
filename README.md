@@ -1,4 +1,8 @@
-# Course Shop Application
+<p align="center">
+	<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/1200px-Node.js_logo.svg.png" alt="nodejs_logo" width="400" style="text-align: center;">
+</p>
+
+<h1 align="center">Course Shop Application</h1>
 
 <p>This project is a full-fledged store where you have the opportunity to buy any of the courses on the site.</p>
 
@@ -19,17 +23,16 @@
 > 	- CRUD courses operations (only own courses)
 > 	- Add to the cart
 > 	- Make an order
-> 	- asd
 > 	- Visit your profile and change your name and avatar
 > 	- Log out of the account
 
 ### Tools used in the project:
 
-> - Node.js
-> - Express.js framework
-> - Handlebars
-> - MongoDB
-> - Materialize CSS
+> - <a href="https://nodejs.org/">Node.js</a>
+> - <a href="https://expressjs.com/">Express.js framework</a>
+> - <a href="https://handlebarsjs.com/">Handlebars</a>
+> - <a href="https://www.mongodb.com/">MongoDB</a>
+> - <a href="https://materializecss.com/">Materialize CSS</a>
 
 ### Some images from the project:
 ![404](/public/readme/Screenshot_24.png)
