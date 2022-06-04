@@ -32,8 +32,8 @@
 > - Materialize CSS
 
 ### Some images from the project:
-![404](/public/images/readme/Screenshot_24.png)
-![404](/public/images/readme/Screenshot_25.png)
-![404](/public/images/readme/Screenshot_26.png)
+![404](/public/readme/Screenshot_24.png)
+![404](/public/readme/Screenshot_25.png)
+![404](/public/readme/Screenshot_26.png)
 
 Yes, yes, you can buy several identical courses ( I don’t know why :grin::see_no_evil:)
