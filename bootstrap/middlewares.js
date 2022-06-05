@@ -3,6 +3,7 @@ const connect_flash = require('connect-flash')
 const variablesMiddleware = require('../middlewares/variables')
 const userMiddleware = require('../middlewares/user')
 const fileMiddleware = require('../middlewares/file')
+const helmet = require('helmet')
 
 module.exports = function (app) {
 	app.use(csruf())
@@ -10,4 +11,5 @@ module.exports = function (app) {
 	app.use(variablesMiddleware)
 	app.use(userMiddleware)
 	app.use(fileMiddleware.single('avatar'))
+	app.use(helmet())
 }
